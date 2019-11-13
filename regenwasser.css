@@ -1,0 +1,58 @@
+body {
+    margin: 8px;
+    background-color: #222;
+    color: #888;
+    font-family: Arial,x-locale-body,sans-serif;
+}
+
+a{
+    color: #999;   
+}
+
+#leinwand {
+    background-color: #000;
+    background-image: url("bg.png");
+    background-size: cover;
+}
+
+#punktestand{
+    background-color: #333;
+    color: #AAA;
+    font-weight: 600;
+}
+#spielbereich {
+	position: relative;
+	width: 600px;
+}
+#gameover {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;	
+	border: 4px solid #712;
+    padding: 2px;
+	margin: 10%;
+	background-color: hsla(0, 20%, 60%, 0.5);
+	width: 80%;
+	height: 70%;
+}
+
+#bat{
+        width: 64px;
+        height: 64px;
+        background-image: url("bat1notrans.png");
+        background-size: cover;
+        display: none;
+        position: relative;
+        opacity: 0.1;
+        transition: opacity 1s;
+        animation-name: fadeaway;
+        animation-duration: 1s;
+    }
+
+        @keyframes fadeaway {
+          0%   {opacity: 1.0;}
+          33%  {opacity: 0.8;}
+          66%  {opacity: 0.5;}
+          100% {opacity: 0.1;}
+        }

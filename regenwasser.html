@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>HTML5-JavaScript Regenwasser Game</title>
+        <meta http-equiv="cache-control" content="no-cache">
+        <script src="https://code.jquery.com/jquery-latest.min.js"></script>   
+        <script src="regenwasser.js"></script>
+        <link href="regenwasser.css" rel="stylesheet">
+</head>
+<body>
+    
+<h1>Fledermaus sammelt Regenwasser-Eimer.</h1>
+<p>(was definitiv nicht wie <a href="https://en.wikipedia.org/wiki/Frogger" target="_blank">Frogger</a> ist.)</p>
+
+<span>Du bist: <img src="bilder/bat3.png"> | </span>
+<span>Du willst: <img src="bilder/eimer.png"></span>
+    
+<div id="spielbereich">
+    <canvas id="leinwand" width="600" height="480">
+    </canvas>
+    
+    <div id="punktestand">Eimer: 0</div>
+    <div id="spielzeit">Spielzeit: 0</div>
+    <div id="gameover">Game Over Man.</div>
+    <div id="bat"></div>
+    
+    <p>Oder: <a href="regenwasser.html">Reload</a></p>
+    
+</div>
+    
+
+</body>
+</html>
