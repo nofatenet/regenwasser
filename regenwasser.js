@@ -5,8 +5,9 @@ var zielx = Math.floor(Math.random()*28)*20+20; //Eimer auf der x-Achse
 var ziely = 440; //Eimer auf der y-Achse
 var punkte = 0;
 
+var gegenerspeed = 2;
 var gegnerpositionen = [1, 10, 60, 100, 150, 296]; 
-var gegnerbewegung = [2, 3, -2, 4, 5, -3];
+var gegnerbewegung = [2, 3, -2, 4, 5, 8];
 console.log(gegnerpositionen);
 $(document).ready(function()
 {
@@ -54,7 +55,15 @@ $(document).ready(function()
                 }
                 zielx = Math.floor(Math.random()*28)*20+20; // x wechsel
                 punkte++;
-                $('#punktestand').html('Eimer: '+punkte);
+                $('#punktestand').html('Eimer gesammelt: ' + punkte);
+                
+                //Gegner bekommen alle 5 Eimer(bei Modulo 0) mehr Speed!
+                if (punkte %5 == 0)
+                {
+                gegenerspeed++ ; 
+                $('#gegnerspeedaktuell').html('Gegner-Geschwindigkeit: ' + gegenerspeed);
+                console.log("GegnerSpeed: " + gegenerspeed);
+                }
             }
         }
         
@@ -72,7 +81,7 @@ $(document).ready(function()
     
         function setzeGegner() {
         for (nr = 0; nr < gegnerpositionen.length; nr++) {
-                gegnerpositionen[nr] += gegnerbewegung[nr] * 5;
+                gegnerpositionen[nr] += gegnerbewegung[nr] * gegenerspeed ; //speed
             if (gegnerpositionen[nr] > 580 || gegnerpositionen[nr] < 0) {
                 gegnerbewegung[nr] *= -1;
             }
@@ -109,6 +118,7 @@ $(document).ready(function()
             $('#gameover').show();
             $('#gameover').html('Game Over Man. Neues Spiel = Seite Neu Laden. <p>Oder: <a href="regenwasser.html">Reload</a></p> Und BTW deine Eimer waren: <h3>' + punkte + '</h3>');
             ready = false;
+            gegenerspeed = 2;
         }
 
     // Furchtbar schlechter Versuch zu ANIMIEREN:
@@ -140,7 +150,7 @@ $(document).ready(function()
         }
     // OMG.
     
-
+    //Steuerung:
         $(document).bind('keydown', function (evt) //Bewegen
         {
             if(ready == true){
@@ -192,7 +202,7 @@ $(document).ready(function()
                 }
             }
             else{
-                console.warn("game not ready!");
+                console.warn("game not ready! (or Over)");
             }
         });
     
