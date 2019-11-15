@@ -59,11 +59,18 @@ $(document).ready(function()
                 
                 //Gegner bekommen alle 5 Eimer(bei Modulo 0) mehr Speed!
                 if (punkte %5 == 0)
-                {
-                gegenerspeed++ ; 
-                $('#gegnerspeedaktuell').html('Gegner-Geschwindigkeit: ' + gegenerspeed);
-                console.log("GegnerSpeed: " + gegenerspeed);
-                }
+                    {
+                        gegenerspeed++ ; 
+                        $('#gegnerspeedaktuell').html('Gegner-Geschwindigkeit: ' + gegenerspeed);
+                        console.log("GegnerSpeed: " + gegenerspeed);
+                    }
+                
+                //Gegner kommt neu hinzu ab 8 Punkten.
+                if(punkte == 8)
+                    {
+                        gegnerpositionen.push(298);
+                        gegnerbewegung.push(9);
+                    }
             }
         }
         
