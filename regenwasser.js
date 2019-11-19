@@ -5,6 +5,8 @@ var zielx = Math.floor(Math.random()*28)*20+20; //Eimer auf der x-Achse
 var ziely = 440; //Eimer auf der y-Achse
 var punkte = 0;
 
+var sndEimer = new Audio('audio/FateSound_From_AudioLab.mp3');
+
 var gegenerspeed = 2;
 var gegnerpositionen = [1, 10, 60, 100, 150, 296]; 
 var gegnerbewegung = [2, 3, -2, 4, 5, 8];
@@ -45,7 +47,7 @@ $(document).ready(function()
             if(x == zielx && y == ziely) {
                 // Ziel erreicht!
                 console.log("Ziel erreicht! Bei y:" + ziely);
-                
+                sndEimer.play(); // mp3 abspielen
                 // neues Ziel erzeugen
                 if (ziely == 440){
                     ziely = 80;
