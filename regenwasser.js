@@ -1,221 +1,247 @@
+//JSLint wasn't satisfied with my code, so I updated it(18.12.2019)  
+
+/*jslint browser: true*/
+
+/*global $, jQuery, alert, console, Audio, takt:true, taktung, spielfeld:true, setzeGegner, kollisionspruefungGegner, erzeugeGegner, nr:true, kollisionGegner, animTakt, animTakt2, animTakt3, Bar*/
+
+//Unexpected++? Use i += 1 instead. This must be the dumbest check in JSLint. Seriously? When has ++ or -- ever caused a programmer any confusion? I love JSLint, but COME ON.
+
 var ready = true;
 var x = 0;
 var y = 0;
-var zielx = Math.floor(Math.random()*28)*20+20; //Eimer auf der x-Achse
+var zielx = Math.floor(Math.random() * 28) * 20 + 20; //Eimer auf der x-Achse
 var ziely = 440; //Eimer auf der y-Achse
 var punkte = 0;
 
+var health = 1;
+
 var sndEimer = new Audio('audio/FateSound_From_AudioLab.mp3');
+var sndEimerRev = new Audio('audio/FateSound_From_AudioLab-reverse.mp3');
 
 var gegenerspeed = 2;
-var gegnerpositionen = [1, 10, 60, 100, 150, 296]; 
+var gegnerpositionen = [1, 10, 60, 100, 150, 296];
 var gegnerbewegung = [2, 3, -2, 4, 5, 8];
 console.log(gegnerpositionen);
-$(document).ready(function()
-{
-        takt = window.setInterval(taktung, 50);
+console.log(gegnerbewegung.length + " Gegner im Spiel");
+$(document).ready(function () {
+    takt = window.setInterval(taktung, 50);
 
-        var spielbrett = document.getElementById('leinwand');
-        spielfeld = spielbrett.getContext('2d');
+    var spielbrett = document.getElementById('leinwand');
+    spielfeld = spielbrett.getContext('2d');
 
-        var spielfigur = new Image();
-        spielfigur.src = 'bilder/bat1.png';
-        var batAnim = 1;
-    
-
-        spielfigur.onload=function()
-        {
-            spielfeld.drawImage(spielfigur,x,y);
-        }
-
-        function zeichneZielfeld() //Ziel
-        {
-            var zielfeld = new Image();
-            zielfeld.src='bilder/eimer.png';
-            zielfeld.onload=function() 
-            {
-                spielfeld.drawImage(zielfeld, zielx, ziely);
-            }
-        }
-        zeichneZielfeld();
-    
-    	function zielfelderreicht()
-        {
-            //console.log("x: "+x+ "|Ziel x:"+ zielx);
-            //console.log("y: "+y+ "|Ziel y:"+ ziely);
-
-            if(x == zielx && y == ziely) {
-                // Ziel erreicht!
-                console.log("Ziel erreicht! Bei y:" + ziely);
-                sndEimer.play(); // mp3 abspielen
-                // neues Ziel erzeugen
-                if (ziely == 440){
-                    ziely = 80;
-                }
-                else if(ziely == 80){
-                    ziely = 440;
-                }
-                zielx = Math.floor(Math.random()*28)*20+20; // x wechsel
-                punkte++;
-                $('#punktestand').html('Eimer gesammelt: ' + punkte);
-                
-                //Gegner bekommen alle 5 Eimer(bei Modulo 0) mehr Speed!
-                if (punkte %5 == 0)
-                    {
-                        gegenerspeed++ ; 
-                        $('#gegnerspeedaktuell').html('Gegner-Geschwindigkeit: ' + gegenerspeed);
-                        console.log("GegnerSpeed: " + gegenerspeed);
-                    }
-                
-                //Gegner kommt neu hinzu ab 8 Punkten.
-                if(punkte == 8)
-                    {
-                        gegnerpositionen.push(298);
-                        gegnerbewegung.push(9);
-                    }
-            }
-        }
+    //Unser Spieler:
+    var spielfigur = new Image();
+    spielfigur.src = 'bilder/bat1.png';
+    spielfigur.onload = function () {
+        spielfeld.drawImage(spielfigur, x, y);
+    };
+    var batAnim = 1;
         
-        function taktung()
-        {
-            //console.log('50 millisekunden');
-            spielfeld.clearRect(0, 0, 600, 480); //Clear sonst bleibt Figur.
-            zeichneZielfeld(); // Ziel Random auf Canvas setzen
-            spielfeld.drawImage(spielfigur,x,y); //Bewegt sich zur Taktung.
-            zielfelderreicht(); // Kollisionskontrolle Player und Ziel
-            setzeGegner();
-            kollisionspruefungGegner();
-            
-        }
+    //Progress:
+    var progress = new Image();
+    //progress.src = 'bilder/p0.png';
+    progress.onload = function () {
+        spielfeld.drawImage(progress, x + 24, y);
+    };
     
-        function setzeGegner() {
-        for (nr = 0; nr < gegnerpositionen.length; nr++) {
-                gegnerpositionen[nr] += gegnerbewegung[nr] * gegenerspeed ; //speed
+    //Ziel:
+    function zeichneZielfeld() {
+        var zielfeld = new Image();
+        zielfeld.src = 'bilder/eimer.png';
+        zielfeld.onload = function () {
+            spielfeld.drawImage(zielfeld, zielx, ziely);
+        };
+    }
+    zeichneZielfeld();
+    
+    function zielfelderreicht() {
+        //console.log("x: "+x+ "|Ziel x:"+ zielx);
+        //console.log("y: "+y+ "|Ziel y:"+ ziely);
+
+        if (x === zielx && y === ziely) {
+            // Ziel erreicht!
+            console.log("Ziel erreicht! Bei y:" + ziely);
+            sndEimer.play(); // mp3 abspielen
+            
+            if (health < 3){
+            health ++;
+            console.log("progresshealth:" + health)   
+            }
+                
+            // neues Ziel erzeugen
+            if (ziely === 440) {
+                ziely = 80;
+            } else if (ziely === 80) {
+                ziely = 440;
+            }
+            
+            // x wechsel:
+            zielx = Math.floor(Math.random() * 28) * 20 + 20;
+            punkte += 1;
+            $('#punktestand').html('Eimer gesammelt: ' + punkte);
+                
+            //Gegner bekommen alle 5 Eimer(bei Modulo 0) mehr Speed!
+            if (punkte % 5 === 0) {
+                gegenerspeed += 1;
+                $('#gegnerspeedaktuell').html('Gegner-Geschwindigkeit: ' + gegenerspeed);
+                console.log("GegnerSpeed: " + gegenerspeed);
+            }
+                
+            //Gegner kommt neu hinzu ab 8 Punkten.
+            if (punkte === 8) {
+                gegnerpositionen.push(298);
+                gegnerbewegung.push(Math.floor(Math.random() * 10));
+                //Wieviele Gegner sind nun im Game?
+                console.log(gegnerbewegung.length + " Gegner im Spiel");
+            }
+        }
+    }
+        
+    function taktung() {
+        //console.log('50 millisekunden');
+        spielfeld.clearRect(0, 0, 600, 480); //Clear sonst bleibt Figur.
+        zeichneZielfeld(); // Ziel Random auf Canvas setzen
+        spielfeld.drawImage(spielfigur, x, y); //Bewegt sich zur Taktung.
+        spielfeld.drawImage(progress, x + 24, y); //Bewegt zu Takt ebenso.
+        zielfelderreicht(); // Kollisionskontrolle Player und Ziel
+        setzeGegner();
+        kollisionspruefungGegner();
+            
+    }
+    
+    function setzeGegner() {
+        for (nr = 0; nr < gegnerpositionen.length; nr += 1) {
+            gegnerpositionen[nr] += gegnerbewegung[nr] * gegenerspeed; //speed
             if (gegnerpositionen[nr] > 580 || gegnerpositionen[nr] < 0) {
                 gegnerbewegung[nr] *= -1;
             }
-            erzeugeGegner(gegnerpositionen[nr], 360-(nr*40));
-            }
+            erzeugeGegner(gegnerpositionen[nr], 360 - (nr * 40));
         }
+    }
     
-        function erzeugeGegner(gx, gy) {
-            var img = new Image();
-            img.src = 'bilder/gegnerfigur.png';
-            img.onload = function() {
-                spielfeld.drawImage(img, gx, gy);
-            }
-        }
+    function erzeugeGegner(gx, gy) {
+        var img = new Image();
+        img.src = 'bilder/gegnerfigur.png';
+        img.onload = function () {
+            spielfeld.drawImage(img, gx, gy);
+        };
+    }
     
-        function kollisionspruefungGegner() {
-        for (nr = 0; nr < gegnerpositionen.length; nr++) {
-            var ygeg = 360-(nr*40);
-            if ( Math.abs(x - gegnerpositionen[nr]) < 20 && y == ygeg ) {
+    function kollisionspruefungGegner() {
+        for (nr = 0; nr < gegnerpositionen.length; nr += 1) {
+            var ygeg = 360 - (nr * 40);
+            if (Math.abs(x - gegnerpositionen[nr]) < 20 && y === ygeg) {
                 // Zusammenstoß
                 console.warn("Zusammenstoß");
-                console.log( Math.abs(x - gegnerpositionen[nr]) );
-                console.log( " | y: "+ y );
-                console.log( " | y: "+ ygeg  + " berechnet ");
+                console.log(Math.abs(x - gegnerpositionen[nr]));
+                console.log(" | y: " + y);
+                console.log(" | y: " + ygeg  + " berechnet ");
                 
                 kollisionGegner();
                 
-                }
             }
         }
+    }
     
-        function kollisionGegner() {
+    function kollisionGegner() {
+        
+        health -= 1;
+        x = 0;
+        y = 0;
+        Bar();
+        sndEimerRev.play(); // mp3 abspielen
+        
+        if (health < 1){
+            ready = false;
+            
             clearInterval(takt);
             $('#gameover').show();
             $('#gameover').html('Game Over Man. Neues Spiel = Seite Neu Laden. <p>Oder: <a href="regenwasser.html">Reload</a></p> Und BTW deine Eimer waren: <h3>' + punkte + '</h3>');
-            ready = false;
-            gegenerspeed = 2;
-        }
+            }
+        
+        gegenerspeed = 2;
+    }
 
     // Furchtbar schlechter Versuch zu ANIMIEREN:
-        var Anim = setInterval(animTakt, 200);
-        function animTakt(){
-            if(batAnim == 1)
-            {
-                spielfigur.src = 'bilder/bat2.png';
-                batAnim = 2;
-            }
+    var Anim = setInterval(animTakt, 200);
+    function animTakt() {
+        if (batAnim === 1) {
+            spielfigur.src = 'bilder/bat2.png';
+            batAnim = 2;
+            new Bar();
         }
+    }
     
-        var Anim2 = setInterval(animTakt2, 330);
-        function animTakt2(){
-            if(batAnim == 2)
-            {
-                spielfigur.src = 'bilder/bat3.png';
-                batAnim = 3;
-            }
+    var Anim2 = setInterval(animTakt2, 330);
+    function animTakt2() {
+        if (batAnim === 2) {
+            spielfigur.src = 'bilder/bat3.png';
+            batAnim = 3;
+            new Bar();
         }
+    }
     
-        var Anim3 = setInterval(animTakt3, 440);
-        function animTakt3(){
-            if(batAnim == 3)
-            {
-                spielfigur.src = 'bilder/bat1.png';
-                batAnim = 1;
-            }
+    var Anim3 = setInterval(animTakt3, 440);
+    function animTakt3() {
+        if (batAnim === 3) {
+            spielfigur.src = 'bilder/bat1.png';
+            batAnim = 1;
+            Bar();
         }
+    }
     // OMG.
+
+    //Progressbar (oh no wtf....if-experiment...):
+    function Bar() {
+        if (health < 5) {
+            progress.src = 'bilder/p' + (health-1) + '.png';
+        }
+    }
     
-    //Steuerung:
-        $(document).bind('keydown', function (evt) //Bewegen
-        {
-            if(ready == true){
-                
+    //Steuerung, Bewegen:
+    $(document).bind('keydown', function (evt) {
+        if (ready === true) {
             console.log("Tastaturcode: " + evt.keyCode);
-            if(evt.keyCode == 37)
-                {
-                    console.log("LINKS");
-                    x -= 20;
-				    console.log("Wert x: "+x);
+            if (evt.keyCode === 37) {
+                console.log("LINKS");
+                x -= 20;
+				console.log("Wert x: " + x);
                     
-                    if (x <= -20) {
-				        x = 0;
-                        console.info("WAND LINKS ERREICHT");
-				    }
-                }
-            else if(evt.keyCode == 39)
-                {
-                    console.log("RECHTS");
-                    x += 20;
-				    console.log("Wert x: "+x);
+                if (x <= -20) {
+				    x = 0;
+                    console.info("WAND LINKS ERREICHT");
+				}
+            } else if (evt.keyCode === 39) {
+                console.log("RECHTS");
+                x += 20;
+				console.log("Wert x: " + x);
                     
-                    if (x >= 600) {
-				        x = 580;
-                        console.info("WAND RECHTS ERREICHT");
-				    }
-                }
-            else if(evt.keyCode == 38)
-                {
-                    console.log("OBEN");
-                    y -= 20;
-				    console.log("Wert y: "+y);
+                if (x >= 600) {
+				    x = 580;
+                    console.info("WAND RECHTS ERREICHT");
+				}
+            } else if (evt.keyCode === 38) {
+                console.log("OBEN");
+                y -= 20;
+				console.log("Wert y: " + y);
                     
-                    if (y <= -20) {
-					   y = 0;
-                        console.info("WAND OBEN ERREICHT");
-				    }
-                }
-            else if(evt.keyCode == 40)
-                {
-                    console.log("UNTEN");
-                    y += 20;
-				    console.log("Wert y: "+y);
+                if (y <= -20) {
+				    y = 0;
+                    console.info("WAND OBEN ERREICHT");
+				}
+            } else if (evt.keyCode === 40) {
+                console.log("UNTEN");
+                y += 20;
+				console.log("Wert y: " + y);
                     
-                    if (y >= 480) {
-					   y = 460;
-                        console.info("WAND UNTEN ERREICHT");
-				    }
-                }
+                if (y >= 480) {
+				    y = 460;
+                    console.info("WAND UNTEN ERREICHT");
+				}
             }
-            else{
-                console.warn("game not ready! (or Over)");
-            }
-        });
-    
-    
+        } else {
+            console.warn("game not ready! (or Over)");
+        }
+    });
+
 });
-
-
